@@ -6,7 +6,13 @@ print("🔍 OpenAI version:", openai.__version__)
 import os
 import traceback
 
+openai_api_key = os.environ.get("OPENAI_API_KEY")
+client = OpenAI(api_key=openai_api_key)
+
 app = Flask(__name__)
+
+openai_api_key = os.environ.get("OPENAI_API_KEY")
+client = OpenAI(api_key=
 
 # Replace with your actual OpenAI API key
 client = OpenAI(api_key="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")
