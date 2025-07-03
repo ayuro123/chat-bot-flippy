@@ -10,6 +10,7 @@ without live data access. Keep this file as a backup to restore if needed.
 from flask import Flask, request, jsonify
 from twilio.twiml.messaging_response import MessagingResponse
 from openai import OpenAI
+import traceback
 
 app = Flask(__name__)
 
@@ -105,11 +106,9 @@ def home():
 @app.route("/sms", methods=["POST"])
 def sms_reply():
     """Handle incoming SMS messages and generate AI responses"""
-    # Get the message body from Twilio
     incoming_msg = request.form.get("Body")
-    
+
     try:
-        # Generate response using OpenAI
         system_prompt = (
             "You are a highly intelligent and versatile AI assistant. "
             "You can explain advanced medical and scientific concepts, solve math problems, define words, "
@@ -129,30 +128,24 @@ def sms_reply():
             max_tokens=300,
             temperature=0.7
         )
-        
+
         reply = response.choices[0].message.content.strip() if response.choices[0].message.content else "No response"
-        
-        # Store the conversation
+
         messages.append({
             "incoming": incoming_msg,
             "reply": reply
         })
-        
-        # Log to console for debugging
+
         print(f"📩 Incoming SMS: {incoming_msg}")
         print(f"🤖 ChatGPT reply: {reply}")
-        
-    import traceback
 
-except Exception as e:
-    reply = "Sorry, I'm having trouble processing your message right now. Please try again later."
-    print("Error occurred:")
-    traceback.print_exc()
-    
-    # Create Twilio response
+    except Exception as e:
+        reply = "Sorry, I'm having trouble processing your message right now. Please try again later."
+        print("Error occurred:")
+        traceback.print_exc()
+
     twiml = MessagingResponse()
     twiml.message(reply)
-    
     return str(twiml)
 
 @app.route("/api/messages")
