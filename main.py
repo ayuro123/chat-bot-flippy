@@ -38,6 +38,7 @@ def sms_reply():
             "Answer all questions to the best of your ability without asking follow-up questions."
         )
 
+        print("🔑 Using key:", client.api_key[:8] + "...")
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
