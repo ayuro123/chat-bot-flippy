@@ -142,9 +142,12 @@ def sms_reply():
         print(f"📩 Incoming SMS: {incoming_msg}")
         print(f"🤖 ChatGPT reply: {reply}")
         
-    except Exception as e:
-        reply = "Sorry, I'm having trouble processing your message right now. Please try again later."
-        print(f"Error: {e}")
+    import traceback
+
+except Exception as e:
+    reply = "Sorry, I'm having trouble processing your message right now. Please try again later."
+    print("Error occurred:")
+    traceback.print_exc()
     
     # Create Twilio response
     twiml = MessagingResponse()
