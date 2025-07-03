@@ -7,14 +7,17 @@ import traceback
 
 print("🔍 OpenAI version:", openai.__version__)
 
-# Load API key from environment variable
+# ✅ Load API key from environment variable
 openai_api_key = os.environ.get("OPENAI_API_KEY")
-print("🔑 Loaded key starts with:", openai_api_key[:8])  # Optional debug print
+print("🔐 Loaded OPENAI_API_KEY from environment:", openai_api_key[:8] + "..." if openai_api_key else "❌ None FOUND")
+
+# ✅ Create OpenAI client
 client = OpenAI(api_key=openai_api_key)
 
+# ✅ Flask app setup
 app = Flask(__name__)
 
-# Store last 10 messages (optional feature)
+# ✅ Message history (optional)
 messages = []
 
 @app.route("/")
@@ -41,7 +44,7 @@ def sms_reply():
             "Answer all questions to the best of your ability without asking follow-up questions."
         )
 
-        print("📩 Incoming:", incoming_msg)
+        print("📨 Incoming message:", incoming_msg)
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -59,7 +62,6 @@ def sms_reply():
         print("❌ Error occurred:")
         traceback.print_exc()
 
-    # Store message (optional)
     messages.append({
         "incoming": incoming_msg,
         "reply": reply
