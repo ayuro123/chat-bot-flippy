@@ -2,16 +2,17 @@ from flask import Flask, request, jsonify
 from twilio.twiml.messaging_response import MessagingResponse
 from openai import OpenAI
 import openai
-print("🔍 OpenAI version:", openai.__version__)
 import os
 import traceback
 
+print("🔍 OpenAI version:", openai.__version__)
+
+# Load API key from environment variable
 openai_api_key = os.environ.get("OPENAI_API_KEY")
+print("🔑 Loaded key starts with:", openai_api_key[:8])  # Optional debug print
 client = OpenAI(api_key=openai_api_key)
 
 app = Flask(__name__)
-
-openai_api_key = os.environ.get("OPENAI_API_KEY")
 
 # Store last 10 messages (optional feature)
 messages = []
@@ -40,7 +41,7 @@ def sms_reply():
             "Answer all questions to the best of your ability without asking follow-up questions."
         )
 
-        print("🔑 Using key:", client.api_key[:8] + "...")
+        print("📩 Incoming:", incoming_msg)
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -55,7 +56,7 @@ def sms_reply():
 
     except Exception as e:
         reply = "Sorry, I'm having trouble processing your message right now. Please try again later."
-        print("Error occurred:")
+        print("❌ Error occurred:")
         traceback.print_exc()
 
     # Store message (optional)
