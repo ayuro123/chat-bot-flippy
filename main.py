@@ -15,46 +15,9 @@ def home():
 
 @app.route("/sms", methods=["POST"])
 def sms_reply():
-    incoming_msg = request.form.get("Body", "")
-
-    try:
-        system_prompt = (
-            "You are a highly intelligent and versatile AI assistant. "
-            "You can explain advanced medical and scientific concepts, solve math problems, define words, "
-            "tell jokes, answer trivia, describe locations, summarize news, provide recipes, and more. "
-            "You are designed to respond over SMS, so your answers must be clear, concise, and readable on a basic phone screen. "
-            "Avoid unnecessary formatting or fancy characters. Stick to plain text. If the user asks for a joke or a story, keep it short and clever. "
-            "When asked for math or factual answers, give a direct answer and show your work briefly. "
-            "Answer all questions to the best of your ability without asking follow-up questions."
-        )
-
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": incoming_msg}
-            ],
-            max_tokens=300,
-            temperature=0.7
-        )
-
-        reply = response.choices[0].message.content.strip() if response.choices[0].message.content else "No response"
-
-        messages.append({
-            "incoming": incoming_msg,
-            "reply": reply
-        })
-
-        print(f"📩 Incoming SMS: {incoming_msg}")
-        print(f"🤖 ChatGPT reply: {reply}")
-
-    except Exception as e:
-        reply = "Sorry, I'm having trouble processing your message right now. Please try again later."
-        print("Error occurred:")
-        traceback.print_exc()
-
+    from twilio.twiml.messaging_response import MessagingResponse
     twiml = MessagingResponse()
-    twiml.message(reply)
+    twiml.message("✅ Flask is alive and responding.")
     return str(twiml)
 
 @app.route("/api/messages")
