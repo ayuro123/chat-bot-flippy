@@ -7,7 +7,7 @@ import traceback
 app = Flask(__name__)
 
 # Replace with your actual OpenAI API key
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="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")
 
 # Store last 10 messages (optional feature)
 messages = []
