@@ -22,11 +22,57 @@ messages = []
 
 @app.route("/")
 def home():
-    return "✅ SMS Chatbot is running."
-
-@app.route("/health", methods=["GET"])
-def health():
-    return "OK", 200
+    """Web UI showing message history"""
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>SMS Chatbot Monitor</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            body { background-color: #ffffff; color: #333333; }
+            .card { border: 1px solid #dee2e6; box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075); }
+            .alert-info { background-color: #d1ecf1; border-color: #bee5eb; color: #0c5460; }
+        </style>
+    </head>
+    <body>
+        <div class="container mt-4">
+            <h1 class="mb-4">📱 SMS Chatbot Monitor</h1>
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Recent Messages</h5>
+                </div>
+                <div class="card-body">
+                    <div id="messages-container"></div>
+                </div>
+            </div>
+            <div class="mt-3">
+                <button class="btn btn-primary" onclick="loadMessages()">Refresh</button>
+                <small class="text-muted ms-3">Auto-refreshing every 5 seconds</small>
+            </div>
+        </div>
+        <script>
+            function loadMessages() {
+                fetch('/api/messages')
+                    .then(res => res.json())
+                    .then(data => {
+                        const container = document.getElementById('messages-container');
+                        container.innerHTML = '';
+                        data.messages.forEach(msg => {
+                            const div = document.createElement('div');
+                            div.className = 'alert alert-info mb-2';
+                            div.innerHTML = `<strong>📩 Incoming:</strong> ${msg.incoming}<br><strong>🤖 Reply:</strong> ${msg.reply}`;
+                            container.appendChild(div);
+                        });
+                    });
+            }
+            loadMessages();
+            setInterval(loadMessages, 5000);
+        </script>
+    </body>
+    </html>
+    """
+    return html
 
 @app.route("/sms", methods=["POST"])
 def sms_reply():
@@ -57,7 +103,7 @@ def sms_reply():
 
         reply = response.choices[0].message.content.strip() if response.choices[0].message.content else "No response"
 
-    except Exception as e:
+    except Exception:
         reply = "Sorry, I'm having trouble processing your message right now. Please try again later."
         print("❌ Error occurred:")
         traceback.print_exc()
@@ -74,7 +120,7 @@ def sms_reply():
 @app.route("/api/messages")
 def get_messages():
     return jsonify({
-        "messages": messages[-10:],
+        "messages": messages[-10:],  # Limit to last 10 messages
         "count": len(messages)
     })
 
