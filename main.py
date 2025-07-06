@@ -86,13 +86,18 @@ def sms_reply():
             reply = "⚠️ Zmanim error. Try again."
     else:
         try:
+            # ✅ Full system prompt for ChatGPT
             system_prompt = (
                 "You are a highly intelligent and versatile AI assistant. "
                 "You can explain advanced medical and scientific concepts, solve math problems, define words, "
                 "tell jokes, answer trivia, describe locations, summarize news, provide recipes, and more. "
                 "You are designed to respond over SMS, so your answers must be clear, concise, and readable on a basic phone screen. "
-                "Avoid unnecessary formatting or fancy characters. Stick to plain text."
+                "Avoid unnecessary formatting or fancy characters. Stick to plain text. "
+                "If the user asks for a joke or a story, keep it short and clever. "
+                "When asked for math or factual answers, give a direct answer and show your work briefly. "
+                "Answer all questions to the best of your ability without asking follow-up questions."
             )
+
             print("📨 Incoming message:", incoming_msg)
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
@@ -116,7 +121,7 @@ def sms_reply():
 @app.route("/api/messages")
 def get_messages():
     return jsonify({
-        "messages": messages[-10:],
+        "messages": messages[-10:],  # Limit to last 10
         "count": len(messages)
     })
 
